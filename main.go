@@ -26,6 +26,16 @@ func cmdExit() error {
 	return fmt.Errorf("Error EXIT")
 }
 
+func cmdMap() error {
+	fmt.Println("Moving up MAP")
+	return fmt.Errorf("No more locations on the map")
+}
+
+func cmdMapB() error {
+	fmt.Println("Moving back up MAP")
+	return fmt.Errorf("No more locations on the map")
+}
+
 var cliCmd map[string]cliCommand
 
 func init() {
@@ -39,6 +49,16 @@ func init() {
 			name:        "exit",
 			description: "Exit the application.",
 			callback:    cmdExit,
+		},
+		"map": {
+			name:        "map",
+			description: "Move up on the map.",
+			callback:    cmdMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Move back on the map",
+			callback:    cmdMapB,
 		},
 	}
 }
@@ -60,6 +80,10 @@ func main() {
 			cliCmd["help"].callback()
 		case cliCmd["exit"].name:
 			cliCmd["exit"].callback()
+		case cliCmd["map"].name:
+			cliCmd["map"].callback()
+		case cliCmd["mapb"].name:
+			cliCmd["mapb"].callback()
 		default:
 			fmt.Println("If you need help with the commands, please type in \"help\" and hit ENTER")
 		}
