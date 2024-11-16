@@ -12,7 +12,10 @@ type cliCommand struct {
 }
 
 func cmdHelp() error {
-	fmt.Println("Test HELP")
+	fmt.Println("This is the list of commands you can use.")
+	for cmd := range cliCmd {
+		fmt.Println(cliCmd[cmd].name + ": " + cliCmd[cmd].description)
+	}
 	return fmt.Errorf("Error HELP")
 }
 
@@ -41,7 +44,9 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Hello, World!")
+	fmt.Println("Hello there!")
+	fmt.Println("Welcome to CLI Pokedex.")
+	fmt.Println("A CLI tool where you will be able to see and learn all about your favourite pokemons.")
 
 	var userInput string
 
