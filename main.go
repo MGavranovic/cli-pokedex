@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 )
 
@@ -36,6 +38,39 @@ func cmdMapB() error {
 	return fmt.Errorf("No more locations on the map")
 }
 
+type PokeResults struct {
+	Name string `json: "name"`
+	Url  string `json: "url"`
+}
+
+type PokeData struct {
+	Count    int           `json: "count"`
+	Next     string        `json: "next"`
+	Previous string        `json: "previous"`
+	Results  []PokeResults `json: "results"`
+}
+
+func getPokeAPI() error {
+	res, err := http.Get("https://pokeapi.co/api/v2/location-area?offset=0&limit=20")
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	var data PokeData
+	decoder := json.NewDecoder(res.Body)
+	if err := decoder.Decode(&data); err != nil {
+		fmt.Println("Error decoding json:", err)
+		return err
+	}
+	// fmt.Println(data)
+	for _, v := range data.Results {
+		fmt.Printf("The names of the locations: %s\n", v.Name)
+	}
+	return nil
+}
+
 var cliCmd map[string]cliCommand
 
 func init() {
@@ -68,7 +103,10 @@ func main() {
 	fmt.Println("Welcome to CLI Pokedex.")
 	fmt.Println("A CLI tool where you will be able to see and learn all about your favourite pokemons.")
 
-	fmt.Println("TEST")
+	fmt.Println("TEST") // NOTE: get rid of this
+
+	// NOTE: testing API
+	getPokeAPI()
 
 	var userInput string
 
