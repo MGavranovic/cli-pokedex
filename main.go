@@ -38,18 +38,6 @@ func cmdMapB() error {
 	return fmt.Errorf("No more locations on the map")
 }
 
-type PokeResults struct {
-	Name string `json: "name"`
-	Url  string `json: "url"`
-}
-
-type PokeData struct {
-	Count    int           `json: "count"`
-	Next     string        `json: "next"`
-	Previous string        `json: "previous"`
-	Results  []PokeResults `json: "results"`
-}
-
 func getPokeAPI() error {
 	res, err := http.Get("https://pokeapi.co/api/v2/location-area?offset=0&limit=20")
 	if err != nil {
