@@ -7,12 +7,36 @@ import (
 	"os"
 )
 
+// Getting the API data
+func getPokeAPI() error {
+	res, err := http.Get("https://pokeapi.co/api/v2/location-area?offset=0&limit=20")
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	var data PokeData
+	decoder := json.NewDecoder(res.Body)
+	if err := decoder.Decode(&data); err != nil {
+		fmt.Println("Error decoding json:", err)
+		return err
+	}
+	// fmt.Println(data)
+	for _, v := range data.Results {
+		fmt.Printf("The names of the locations: %s\n", v.Name)
+	}
+	return nil
+}
+
+// Commands struct
 type cliCommand struct {
 	name        string
 	description string
 	callback    func() error
 }
 
+// Commands callbacks
 func cmdHelp() error {
 	fmt.Println("This is the list of commands you can use.")
 	for cmd := range cliCmd {
@@ -38,29 +62,10 @@ func cmdMapB() error {
 	return fmt.Errorf("No more locations on the map")
 }
 
-func getPokeAPI() error {
-	res, err := http.Get("https://pokeapi.co/api/v2/location-area?offset=0&limit=20")
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-
-	var data PokeData
-	decoder := json.NewDecoder(res.Body)
-	if err := decoder.Decode(&data); err != nil {
-		fmt.Println("Error decoding json:", err)
-		return err
-	}
-	// fmt.Println(data)
-	for _, v := range data.Results {
-		fmt.Printf("The names of the locations: %s\n", v.Name)
-	}
-	return nil
-}
-
+// map cli commands
 var cliCmd map[string]cliCommand
 
+// init cli commands
 func init() {
 	cliCmd = map[string]cliCommand{
 		"help": {
@@ -96,13 +101,17 @@ func main() {
 	// NOTE: testing API
 	getPokeAPI()
 
+	// user input
 	var userInput string
 
+	// continuous loop
 	for {
 		fmt.Print("pokedex > ")
 
+		// ask for user input
 		fmt.Scan(&userInput)
 
+		// respond to user input
 		switch userInput {
 		case cliCmd["help"].name:
 			cliCmd["help"].callback()
