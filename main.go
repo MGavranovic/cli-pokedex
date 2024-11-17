@@ -7,11 +7,15 @@ import (
 	"os"
 )
 
+var currentUrl string = "https://pokeapi.co/api/v2/location-area?offset=0&limit=20"
+var limit = 1
+
+// could use bool params for next and previous (if true go next ...)
 // Getting the API data
-func getPokeAPI() error {
-	res, err := http.Get("https://pokeapi.co/api/v2/location-area?offset=0&limit=20")
+func getPokeAPI(url string, showLocations bool) (PokeData, error) {
+	res, err := http.Get(url)
 	if err != nil {
-		return err
+		return PokeData{}, err
 	}
 
 	defer res.Body.Close()
@@ -20,13 +24,15 @@ func getPokeAPI() error {
 	decoder := json.NewDecoder(res.Body)
 	if err := decoder.Decode(&data); err != nil {
 		fmt.Println("Error decoding json:", err)
-		return err
+		return PokeData{}, err
 	}
-	// fmt.Println(data)
-	for _, v := range data.Results {
-		fmt.Printf("The names of the locations: %s\n", v.Name)
+	if showLocations {
+		// fmt.Println(data)
+		for _, v := range data.Results {
+			fmt.Printf("The names of the locations: %s\n", v.Name)
+		}
 	}
-	return nil
+	return data, nil
 }
 
 // Commands struct
@@ -40,7 +46,7 @@ type cliCommand struct {
 func cmdHelp() error {
 	fmt.Println("This is the list of commands you can use.")
 	for cmd := range cliCmd {
-		fmt.Println(cliCmd[cmd].name + ": " + cliCmd[cmd].description)
+		fmt.Println("- " + cliCmd[cmd].name + ": " + cliCmd[cmd].description)
 	}
 	return fmt.Errorf("Error HELP")
 }
@@ -53,13 +59,25 @@ func cmdExit() error {
 }
 
 func cmdMap() error {
-	fmt.Println("Moving up MAP")
-	return fmt.Errorf("No more locations on the map")
+	data, err := getPokeAPI(currentUrl, true)
+	if err != nil {
+		return err
+	}
+	currentUrl = data.Next
+	return nil
 }
 
+// The problem here is the url gets updated after cmd map is ran which changes the current url to the next one, and when cmd mapb is ran, it takes in that next url before it updates it properly (as the url is updated after the getPokeAPI function returns the data)
+// NOTE: this same issue is happening after running mapb a few times and going back to running map
+// DEBUG: first time I run mapb it goes up the map, and every time I run it after that it works as intended
 func cmdMapB() error {
-	fmt.Println("Moving back up MAP")
-	return fmt.Errorf("No more locations on the map")
+	fmt.Println("current URL *****************************************", currentUrl)
+	data, err := getPokeAPI(currentUrl, true)
+	if err != nil {
+		return err
+	}
+	currentUrl = data.Previous
+	return nil
 }
 
 // map cli commands
@@ -99,7 +117,7 @@ func main() {
 	fmt.Println("TEST") // NOTE: get rid of this
 
 	// NOTE: testing API
-	getPokeAPI()
+	// getPokeAPI()
 
 	// user input
 	var userInput string
