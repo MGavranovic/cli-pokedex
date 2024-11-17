@@ -68,6 +68,8 @@ func main() {
 	fmt.Println("Welcome to CLI Pokedex.")
 	fmt.Println("A CLI tool where you will be able to see and learn all about your favourite pokemons.")
 
+	fmt.Println("TEST")
+
 	var userInput string
 
 	for {
