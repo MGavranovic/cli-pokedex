@@ -50,7 +50,7 @@ func cmdHelp(c *Config) error {
 	for cmd := range cliCmd {
 		fmt.Println("- " + cliCmd[cmd].name + ": " + cliCmd[cmd].description)
 	}
-	return fmt.Errorf("Error HELP")
+	return fmt.Errorf("Error trying to use \"help\"")
 }
 
 func cmdExit(c *Config) error {
@@ -149,9 +149,13 @@ func main() {
 		case cliCmd["exit"].name:
 			cliCmd["exit"].callback(config)
 		case cliCmd["map"].name:
-			cliCmd["map"].callback(config)
+			if err := cliCmd["map"].callback(config); err != nil {
+				fmt.Printf("An error occurred while trying to use \"%v\": %v\n", cliCmd["map"].name, err)
+			}
 		case cliCmd["mapb"].name:
-			cliCmd["mapb"].callback(config)
+			if err := cliCmd["mapb"].callback(config); err != nil {
+				fmt.Printf("An error occurred while trying to use \"%v\": %v\n", cliCmd["mapb"].name, err)
+			}
 		default:
 			fmt.Println("If you need help with the commands, please type in \"help\" and hit ENTER")
 		}
