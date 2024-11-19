@@ -1,10 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
+
+	"github.com/MGavranovic/cli-pokedex/pokeapi"
 )
 
 var (
@@ -14,28 +14,6 @@ var (
 // Could use pointers maybe the value doesnt update aaa
 // could use bool params for next and previous (if true go next ...)
 // Getting the API data
-func getPokeAPI(url string, showLocations bool) (*PokeData, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return &PokeData{}, err
-	}
-
-	defer res.Body.Close()
-
-	var data PokeData
-	decoder := json.NewDecoder(res.Body)
-	if err := decoder.Decode(&data); err != nil {
-		fmt.Println("Error decoding json:", err)
-		return &PokeData{}, err
-	}
-
-	if showLocations {
-		for _, v := range data.Results {
-			fmt.Printf("The names of the locations: %s\n", v.Name)
-		}
-	}
-	return &data, nil
-}
 
 // Commands struct
 type cliCommand struct {
@@ -67,7 +45,7 @@ func cmdMap(c *Config) error {
 	} else {
 	}
 
-	data, err := getPokeAPI(url, true)
+	data, err := pokeapi.GetPokeLocations(url, true)
 	if err != nil {
 		return err
 	}
@@ -82,7 +60,7 @@ func cmdMapB(c *Config) error {
 	if c.Previous == nil {
 		return fmt.Errorf("You are already on the first page")
 	}
-	data, err := getPokeAPI(*c.Previous, true)
+	data, err := pokeapi.GetPokeLocations(*c.Previous, true)
 	if err != nil {
 		return err
 	}
@@ -126,11 +104,6 @@ func main() {
 	fmt.Println("Welcome to CLI Pokedex.")
 	fmt.Println("A CLI tool where you will be able to see and learn all about your favourite pokemons.")
 	config := &Config{}
-
-	fmt.Println("TEST") // NOTE: get rid of this
-
-	// NOTE: testing API
-	// getPokeAPI()
 
 	// user input
 	var userInput string
