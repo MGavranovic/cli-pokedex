@@ -10,7 +10,7 @@ var (
 	currentUrl string = "https://pokeapi.co/api/v2/location-area?offset=0&limit=20"
 )
 
-func GetPokeLocations(url string, showLocations bool) (*PokeData, error) {
+func GetPokeLocations(url string) (*PokeData, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return &PokeData{}, err
@@ -25,10 +25,5 @@ func GetPokeLocations(url string, showLocations bool) (*PokeData, error) {
 		return &PokeData{}, err
 	}
 
-	if showLocations {
-		for _, v := range data.Results {
-			fmt.Printf("The names of the locations: %s\n", v.Name)
-		}
-	}
 	return &data, nil
 }
