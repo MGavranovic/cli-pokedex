@@ -11,10 +11,6 @@ var (
 	currentUrl string = "https://pokeapi.co/api/v2/location-area?offset=0&limit=20"
 )
 
-// Could use pointers maybe the value doesnt update aaa
-// could use bool params for next and previous (if true go next ...)
-// Getting the API data
-
 // Commands struct
 type cliCommand struct {
 	name        string
@@ -37,6 +33,9 @@ func cmdExit(c *Config) error {
 	// I have to figure out how to make an optional return, as this one is not going to happen due to exiting the program
 	return fmt.Errorf("Error EXIT")
 }
+
+// DEBUG:
+// if on the last page or on the first, return err instead of trying to get the url frist
 
 func cmdMap(c *Config) error {
 	url := currentUrl
