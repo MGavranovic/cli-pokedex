@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/MGavranovic/cli-pokedex/pokeCache"
 	"github.com/MGavranovic/cli-pokedex/pokeapi"
+	"github.com/MGavranovic/cli-pokedex/pokecache"
 )
 
 var (
@@ -102,6 +102,17 @@ func cmdMapB(c *Config, cache pokecache.Cache) error {
 		}
 		cache.Add(*c.Previous, rawData)
 	}
+
+	/*
+		panic: runtime error: invalid memory address or nil pointer dereference
+		[signal 0xc0000005 code=0x0 addr=0x28 pc=0x36a0df]
+
+		goroutine 1 [running]:
+		main.cmdMapB(0xc000020100, {0xc00001aba0, {0x0, 0x0}})
+		        C:/Users/Kuca/Desktop/Boot.dev/cli-pokedex/main.go:106 +0x27f
+		main.main()
+		        C:/Users/Kuca/Desktop/Boot.dev/cli-pokedex/main.go:173 +0x356
+	*/
 
 	for _, v := range data.Results {
 		fmt.Printf("The names of the locations: %s\n", v.Name)
